@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        ul{
+            list-style:none;
+            width: 498px;
+        }
+        .bod{
+            border:1px solid #cccccc;
+        }
+        #box{
+            width: 500px;
+            margin:100px auto;
+        }
+        input{
+            width: 398px;
+            height:48px;
+            border:1px solid blue;
+            outline: none;
+            text-indent: 15px;
+            float:left;
+            font-size:16px;
+        }
+        button{
+            float:left;
+            width: 100px;
+            height:50px;
+            border:none;
+            background-color: #112ffe;
+            color: #ffffff;
+            font-size:16px;
+        }
+        .clearfix{
+            clear:both;
+        }
+        li{
+            height:30px;
+        }
+        li:hover{
+            background-color: #eee;
+            cursor:pointer;
+        }
+        .bgc{
+            background-color: #eee;
+            cursor:pointer;
+        }
+
+    </style>
+</head>
+<body>
+<div id="box">
+    <!--浏览器的键盘默认事件：箭头向下是光标移动到最后，箭头向上是光标移动到最前面。-->
+    <!--@keydown.down.prevent该事件是按下键盘的向下箭头的事件，后面的prevent是用来阻止浏览器的默认事件。-->
+    <!--@keydown.up.prevent该事件是按上键盘的向下箭头的事件，后面的prevent是用来阻止浏览器的默认事件。-->
+    <!--$event是vue中获取事件event对象时传参数的方式。-->
+    <input type="text" v-model="msg" @keyup="getData($event)"
+           @keydown.down.prevent="moveDownAddBgc"
+           @keydown.up.prevent="moveUpAddBgc">
+    <button>百度一下</button>
+    <div class="clearfix"></div>
+    <ul :class="{bod:this.datas.length}">
+        <li v-for="(item,i) in datas" v-text="item"
+            @mouseenter="addBgc(i)" @mouseleave="delBgc(i)"
+            :class="{bgc:i===selectIndex}"></li>
+    </ul>
+</div>
+</body>
+<!--百度地址-->
+<!--'https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su?-->
+<script src="https://cdn.bootcss.com/vue/2.5.13/vue.min.js"></script>
+<script src="https://cdn.bootcss.com/vue-resource/1.5.0/vue-resource.min.js"></script>
+<script>
+    new Vue({
+        el:'#box',
+        data:{
+            mouseIndex:-1,
+            selectIndex:-1,
+            msg:'',
+            datas:[]
+        },
+        methods:{
+            getData:function(ev){
+                if(ev.keyCode===38||ev.keyCode===40)return;
+                this.$http.jsonp('https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su',
+                    {params:{wd:this.msg},jsonp:'cb'},{emulate:true})
+                    .then(function(res){
+                        console.log(res);
+                    this.datas=res.data.s.splice(0,4);
+                    })
+            },
+            moveDownAddBgc:function(){
+//               判断鼠标是否有移入移出，如果有mouseIndex一定不等于-1，
+////             那么此时selectIndex的值等于mouseIndex。
+////             如果没有那么mouseIndex一定等于-1，此时selectIndex的值等于-1，
+////             即初始值
+                this.selectIndex=this.mouseIndex===-1?this.selectIndex:this.mouseIndex;
+                this.selectIndex++;
+//               判断当前selectIndex的值是否小于datas.length，如果是那么它的值就是当前值，
+////             否则让它的值等于0.
+                this.selectIndex=this.selectIndex<this.datas.length?this.selectIndex:0;
+                this.msg=this.datas[this.selectIndex];
+//                判断一次mouseIndex的值后就让它恢复初始值。
+                this.mouseIndex=-1;
+            },
+            moveUpAddBgc:function(){
+//               判断鼠标是否有移入移出，如果有mouseIndex一定不等于-1，
+//               那么此时selectIndex的值等于mouseIndex。
+//               如果没有那么mouseIndex一定等于-1，此时selectIndex的值等于-1，
+//               即初始值
+                this.selectIndex=this.mouseIndex===-1?this.selectIndex:this.mouseIndex;
+                this.selectIndex--;
+//                判断当前selectIndex的值是否大于等于0，如果是那么它的值就是当前值，
+//                否则让它的值等于3，即datas.length.
+                this.selectIndex=this.selectIndex>=0?this.selectIndex:this.datas.length-1;
+                this.msg=this.datas[this.selectIndex];
+//                判断一次mouseIndex的值后就让它恢复初始值。
+                this.mouseIndex=-1;
+            },
+            addBgc:function(i){
+                this.selectIndex=-1;
+                this.mouseIndex=i;
+            },
+            delBgc:function(i){
+                this.selectIndex=-1;
+                this.mouseIndex=i;
+            }
+        }
+    })
+</script>
+</html>
