@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="bootstrap-3.3.7-dist/css/bootstrap.css">
+    <style>
+        #box{
+            width: 500px;
+            height: 600px;
+            background-color: rgb(95,161,187);
+            margin:50px auto;
+            padding: 30px 0;
+            box-sizing: border-box;
+            color:#000;
+        }
+        h1{
+            font-size:60px;
+        }
+        .inBox{
+            width: 80%;
+            height:80px;
+            margin-bottom:10px;
+            padding:0 30px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .inBox:nth-of-type(6){
+            background: none;
+        }
+        .inBox:nth-of-type(5){
+            width: 80%;
+            height: 1px;
+            background-color: #ccc;
+            margin-top:20px;
+        }
+        .pink{
+            background-color: rgb(230,87,134);
+        }
+        .blue{
+            background-color: #7acb50;
+        }
+    </style>
+</head>
+<body>
+<div id="box">
+    <h1 class="text-center" v-text="msg"></h1>
+    <div class="center-block inBox" v-for="(item,i) in content" @click="fn(i)"
+         :class="{blue:!(item.background),pink:item.background}">
+        <h3 v-text="item.name"></h3>
+        <h3 v-text="item.price"></h3>
+    </div>
+</div>
+</body>
+<script src="vue源码.js"></script>
+<script>
+    new Vue({
+        el:'#box',
+        data:{
+            msg:'Services',
+            content:[
+                {
+                    name:'Web Development',
+                    price:300,
+                    background:true
+                }, {
+                    name:'Design',
+                    price:400,
+                    background:true
+                }, {
+                    name:'integration',
+                    price:250,
+                    background:true
+                }, {
+                    name:'Training',
+                    price:220,
+                    background:true
+                }, {
+                    name:'',
+                    price:''
+                }, {
+                    name:'Total',
+                    price:0
+                }
+            ]
+        },
+        methods:{
+            fn:function(i){
+                this.content[i].background=!(this.content[i].background);
+                var totalPrice=this.content[i].price;
+                if(this.content[i].background){
+                    this.content[(this.content.length)-1].price-=totalPrice;
+                }else{
+                    this.content[(this.content.length)-1].price+=totalPrice;
+                }
+            }
+        }
+    });
+</script>
+</html>
